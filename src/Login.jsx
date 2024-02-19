@@ -5,7 +5,14 @@ import {
   faFacebook,
   faGithub,
 } from "@fortawesome/free-brands-svg-icons";
-import { signInWithPopup, GoogleAuthProvider,signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  FacebookAuthProvider,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 import auth from "./firebase-config";
 
 const Login = () => {
@@ -16,8 +23,34 @@ const Login = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then((result) => {
-        const { displayName, email,photoURL } = result.user;
-        setUserData({ displayName, email,photoURL });
+        const { displayName, email, photoURL } = result.user;
+        setUserData({ displayName, email, photoURL });
+        setIsLoggedIn(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const facebookLogin = async () => {
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const { displayName, email, photoURL } = result.user;
+        setUserData({ displayName, email, photoURL });
+        setIsLoggedIn(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const githubLogin = async () => {
+    const provider = new GithubAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const { displayName, email, photoURL } = result.user;
+        setUserData({ displayName, email, photoURL });
         setIsLoggedIn(true);
       })
       .catch((error) => {
@@ -39,17 +72,16 @@ const Login = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (result) => {
       if (result) {
-        const {displayName, email,photoURL} = result
-        setUserData({ displayName, email ,photoURL})
-        setIsLoggedIn(true)
+        const { displayName, email, photoURL } = result;
+        setUserData({ displayName, email, photoURL });
+        setIsLoggedIn(true);
       } else {
-        setIsLoggedIn(false)
+        setIsLoggedIn(false);
       }
-
-    })
+    });
 
     return () => unsubscribe();
-  },[])
+  }, []);
 
   return (
     <>
@@ -71,28 +103,32 @@ const Login = () => {
             </button>
           </div>
           <div className="mb-3">
-            <button className="login-btn btn btn-primary">
+            <button
+              className="login-btn btn btn-primary"
+              onClick={facebookLogin}
+            >
               Login with Facebook{" "}
               <FontAwesomeIcon icon={faFacebook} style={{ color: "#74C0FC" }} />{" "}
             </button>
           </div>
           <div className="mb-3">
-            <button className="login-btn btn btn-secondary">
+            <button
+              className="login-btn btn btn-secondary"
+              onClick={githubLogin}
+            >
               Login with GitHub <FontAwesomeIcon icon={faGithub} />
             </button>
           </div>
         </div>
-      )} 
-      {isLoggedIn && 
-      
-      <div className="">
-        <img src={userData.photoURL} alt="" />
-        <h1>{userData.displayName}</h1>
-        <h3>{userData.email}</h3>
-        <button onClick={Logout}>Logout</button>
-      </div>
-
-      }
+      )}
+      {isLoggedIn && (
+        <div className="">
+          <img src={userData.photoURL} alt="" />
+          <h1>{userData.displayName}</h1>
+          <h3>{userData.email}</h3>
+          <button onClick={Logout}>Logout</button>
+        </div>
+      )}
     </>
   );
 };
