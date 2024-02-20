@@ -13,7 +13,8 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import auth from "./firebase-config";
+import {auth} from "./firebase-config";
+import Fileupload from "./Fileupload";
 
 const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -127,6 +128,9 @@ const Login = () => {
           <h1>{userData.displayName}</h1>
           <h3>{userData.email}</h3>
           <button onClick={Logout}>Logout</button>
+          <div className="mt-5 p-5">
+            <Fileupload />
+          </div>
         </div>
       )}
     </>
